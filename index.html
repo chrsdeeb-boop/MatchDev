@@ -200,7 +200,31 @@ function validateStep(s){if(s===1&&!state.type){alert('Please select whether you
 async function submitForm(){state.name=document.getElementById('nameInput').value.trim();state.phone=document.getElementById('phoneInput').value.trim();state.notes=document.getElementById('notesInput').value.trim();if(!state.name){document.getElementById('nameInput').classList.add('err');return}if(!state.phone||state.phone.length<7){document.getElementById('phoneInput').classList.add('err');document.getElementById('phoneErr').classList.add('show');return}
 const btn=document.getElementById('submitBtn');btn.textContent='Sending…';btn.disabled=true;
 const b=state.budget>=5000000?'AED 5M+':'AED '+state.budget.toLocaleString();
-try{await fetch('https://script.google.com/macros/s/AKfycbzhTI9VaJ8QqkvnJqRnmjUkdfbN-uVCFDVWUApYg7jZCJEWtYa9uTRLrkvdf1P2pi-XYg/exec',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:new Date().toISOString(),name:state.name,whatsapp:state.phone,type:state.type,budget:b,timeline:state.timeline,goal:state.goal,risk:state.risk,area:state.area||'No preference',notes:state.notes||'┄'})})} catch(e){console.log(e)}
+try{
+  const formData = new FormData();
+  formData.append('timestamp', new Date().toISOString());
+  formData.append('name', state.name);
+  formData.append('whatsapp', state.phone);
+  formData.append('type', state.type);
+  formData.append('budget', b);
+  formData.append('timeline', state.timeline);
+  formData.append('goal', state.goal);
+  formData.append('risk', state.risk);
+  formData.append('area', state.area || 'No preference');
+  formData.append('notes', state.notes || 'None');
+
+  await fetch('https://script.google.com/macros/s/AKfycbzhTI9VaJ8QqkvnJqRnmjUkdfbN-uVCFDVWUApYg7jZCJEWtYa9uTRLrkvdf1P2pi-XYg/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    body: formData
+  });
+} catch(e){
+  console.error('Submission failed:', e);
+  alert('Submission failed. Please message us on WhatsApp.');
+  btn.textContent='Send me my matches →';
+  btn.disabled=false;
+  return;
+}
 document.querySelectorAll('.form-step').forEach(e=>e.classList.remove('active'));document.getElementById('successScreen').classList.add('show');for(let i=1;i<=1;i++){const si=document.getElementById('si'+i);si.classList.remove('active');si.classList.add('done')}for(let i=2;i<=4;i++){const si=document.getElementById('si'+i);si.classList.remove('active');si.classList.add('done')}}
 function copyLink(){navigator.clipboard.writeText(window.location.href).then(()=>alert('Link copied!'))}
 ['nameInput','phoneInput'].forEach(id=>{document.getElementById(id)?.addEventListener('input',function(){this.classList.remove('err');if(id==='phoneInput')document.getElementById('phoneErr').classList.remove('show')})});
