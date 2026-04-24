@@ -15,7 +15,7 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
 .wrapper{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:64px 24px 120px}
 .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.1);border:1px solid var(--border);border-radius:100px;padding:6px 16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:32px;animation:fadeUp 0.6s ease both}
 .badge::before{content:'';width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%},100%{opacity:1}50%{opacity:0.3}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 h1{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(36px,6vw,58px);line-height:1.1;letter-spacing:-0.02em;color:var(--white);margin-bottom:8px;animation:fadeUp 0.6s 0.1s ease both}
 h1 em{font-style:italic;color:var(--gold)}
 .subtitle{font-size:16px;color:var(--muted);line-height:1.65;margin-bottom:16px;max-width:560px;animation:fadeUp 0.6s 0.2s ease both}
@@ -57,7 +57,7 @@ h1 em{font-style:italic;color:var(--gold)}
 .budget-display{background:var(--navy3);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
 .budget-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:var(--gold2)}
 .budget-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:0.08em;text-align:right}
-.range-wra{position:relative;padding:8px 0}
+.range-wrap{position:relative;padding:8px 0}
 input[type=range]{ -webkit-appearance:none;width:100%;height:4px;background:var(--navy3);border-radius:2px;outline:none;border:1px solid var(--border)}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 0 4px rgba(201,168,76,0.2);transition:box-shadow 0.2s}
 .range-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:8px}
@@ -185,13 +185,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <p style="margin-top:24px;font-size:13px;color:var(--muted)">Know someone looking at UAE property?<br><strong style="color:var(--gold);cursor:pointer" onclick="copyLink()">Copy this link to share →</strong></p>
     </div>
   </div>
-  <div class="footer-note">MATCHDE  7 UAE POPERTY INTELLIGENCE · FREE SERVICE · NO BROKER FEES</div>
+  <div class="footer-note">MATCHDEV · UAE PROPERTY INTELLIGENCE · FREE SERVICE · NO BROKER FEES</div>
 </div>
 <script>
 const state={type:null,budget:800000,timeline:null,goal:null,risk:null,area:'',name:'',phone:'',notes:''};
 let currentStep=1;
-function updateBudget(v){state.budget=int(v);v=parseInt(v);let d=v>=5000000?'AED 5M+':v>=1000000?'AED '+toFixed(v/1e6,0)+'M':'AED '+v.toLocaleString();document.getElementById('budgetDisplay').textContent=d;const p=((v-400000)/4600000)*100;document.getElementById('budgetSlider').style.background=`linear-gradient(to right,#c9a84c ${p}%,#1e2f42 ${p}%)`}
-function toFixed(v,d){return parseFloat(v.toFixed(d))}
+function updateBudget(v){v=parseInt(v,10);state.budget=v;let d=v>=5000000?'AED 5M+':v>=1000000?'AED '+(v/1000000).toFixed(1).replace('.0','')+'M':'AED '+v.toLocaleString();document.getElementById('budgetDisplay').textContent=d;const p=((v-400000)/4600000)*100;document.getElementById('budgetSlider').style.background=`linear-gradient(to right,#c9a84c ${p}%,#1e2f42 ${p}%)`}
 updateBudget(800000);
 document.querySelectorAll('.choice-btn').forEach(b=>{b.addEventListener('click',function(){const f=this.dataset.field;document.querySelectorAll(`.choice-btn[data-field="${f}"]`).forEach(b=>b.classList.remove('selected'));this.classList.add('selected');state[f]=this.dataset.value})});
 function updateStepUI(s){document.querySelectorAll('.form-step').forEach(e=>e.classList.remove('active'));document.getElementById('step'+s).classList.add('active');for(let i=1;i<=1;i++){const si=document.getElementById('si'+i);si.classList.remove('active','done');if(i<s)si.classList.add('done');else if(i===s)si.classList.add('active')}for(let i=2;i<=4;i++){const si=document.getElementById('si'+i);si.classList.remove('active','done');if(i<s)si.classList.add('done');else if(i===s)si.classList.add('active')}currentStep=s}
@@ -200,7 +199,7 @@ function goBack(s){updateStepUI(s-1);window.scrollTo({top:document.getElementByI
 function validateStep(s){if(s===1&&!state.type)return false;if(s===2&&!state.timeline){alert('Please select your timeline.');return false}if(s===3){if(!state.goal||!state.risk){alert('Please select your goal and risk appetite.');return false}state.area=document.getElementById('areaInput').value}return true}
 async function submitForm(){state.name=document.getElementById('nameInput').value.trim();state.phone=document.getElementById('phoneInput').value.trim();state.notes=document.getElementById('notesInput').value.trim();if(!state.name){document.getElementById('nameInput').classList.add('err');return}if(!state.phone||state.phone.length<7){document.getElementById('phoneInput').classList.add('err');document.getElementById('phoneErr').classList.add('show');return}
 const btn=document.getElementById('submitBtn');btn.textContent='Sending…';btn.disabled=true;
-const b=state.budget>=5000000?'AED �M+':'AED '+state.budget.toLocaleString();
+const b=state.budget>=5000000?'AED 5M+':'AED '+state.budget.toLocaleString();
 try{await fetch('https://script.google.com/macros/s/AKfycbzhTI9VaJ8QqkvnJqRnmjUkdfbN-uVCFDVWUApYg7jZCJEWtYa9uTRLrkvdf1P2pi-XYg/exec',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:new Date().toISOString(),name:state.name,whatsapp:state.phone,type:state.type,budget:b,timeline:state.timeline,goal:state.goal,risk:state.risk,area:state.area||'No preference',notes:state.notes||'┄'})})} catch(e){console.log(e)}
 document.querySelectorAll('.form-step').forEach(e=>e.classList.remove('active'));document.getElementById('successScreen').classList.add('show');for(let i=1;i<=1;i++){const si=document.getElementById('si'+i);si.classList.remove('active');si.classList.add('done')}for(let i=2;i<=4;i++){const si=document.getElementById('si'+i);si.classList.remove('active');si.classList.add('done')}}
 function copyLink(){navigator.clipboard.writeText(window.location.href).then(()=>alert('Link copied!'))}
